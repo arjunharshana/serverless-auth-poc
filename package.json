@@ -1,0 +1,21 @@
+{
+  "name": "serverless-auth-poc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serverless": "^4.36.1",
+    "serverless-localstack": "^1.4.0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1054.0",
+    "bcryptjs": "^3.0.3",
+    "jsonwebtoken": "^9.0.3"
+  }
+}
