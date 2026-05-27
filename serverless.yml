@@ -1,0 +1,60 @@
+service: serverless-auth-poc
+
+frameworkVersion: '3'
+
+plugins:
+  - serverless-localstack
+
+custom:
+  localstack:
+    stages:
+      - local
+    host: http://localhost
+    edgePort: 4566 # MiniStack default port
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: local
+  region: us-east-1
+  environment:
+    USERS_TABLE: UsersTable
+    JWT_SECRET: super-secret-local-key
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:GetItem
+          Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}"
+
+functions:
+  registerUser:
+    handler: src/register.handler 
+    events:
+      - http:
+          path: register
+          method: post
+
+  loginUser:
+    handler: src/login.handler 
+    events:
+      - http:
+          path: login
+          method: post
+
+# DynamoDB table definition
+resources:
+  Resources:
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.USERS_TABLE}
+        AttributeDefinitions:
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: email
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
